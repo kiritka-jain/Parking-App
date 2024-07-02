@@ -1,0 +1,2 @@
+class InvalidExitTimeException(Exception):
+        pass

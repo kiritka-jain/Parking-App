@@ -1,4 +1,6 @@
+from exceptions.invalid_exit_time_exception import InvalidExitTimeException
 from models.slot import Slot
+from models.ticket import Ticket
 from strategies.ascending_strategy import AscendingStrategy
 from strategies.strategy import Strategy
 
@@ -8,6 +10,7 @@ class ParkingLot:
         self.capacity = capacity
         self.slots = []
         self.strategy = strategy
+        self.tickets = {}
 
     def get_slots(self):
         return self.slots
@@ -15,17 +18,27 @@ class ParkingLot:
     def set_strategy(self, strategy: Strategy):
         self.strategy = strategy
 
-    def park_car(self, car):
+    def park_car(self, car, entry_time):
         available_slot = self._get_free_slot()
-        if available_slot is not None:
-            self.slots[available_slot].set_vehicle(car)
-            return "Car parked sucessfully."
-        else:
+        if available_slot is None:
             return "Parking full. No slot available."
 
-    def leave_car(self, car_reg_num):
+        self.slots[available_slot].set_vehicle(car)
+        ticket_id = str(available_slot) + "a"
+        self.tickets[car.get_registration_num()] = Ticket(ticket_id, car.get_registration_num, entry_time)
+        return "Car parked successfully."
+
+    def leave_car(self, car_reg_num, exit_time):
         for i in range(self.capacity):
-            if self.slots[i].get_vehicle() is not None and self.slots[i].get_vehicle().get_registration_num() == car_reg_num:
+            vehicle = self.slots[i].get_vehicle()
+            if vehicle is not None and vehicle.get_registration_num() == car_reg_num:
+                try:
+                    self.tickets[car_reg_num].set_exit_time(exit_time)
+                except InvalidExitTimeException:
+                    print("Invalid leave time")
+                    return
+                amount = self.tickets[car_reg_num].get_amount_to_pay()
+                print("Your parking charges are Rupees:", amount)
                 return self.slots[i].empty_slot()
         return "Car not found."
 
