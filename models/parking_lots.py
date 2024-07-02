@@ -43,7 +43,7 @@ class ParkingLot:
         return all_slots
 
     def _get_free_slot(self):
-        return self.strategy.get_slot()
+        return self.strategy.get_slot(self.slots)
 
     def parking_stats(self):
         empty = 0
@@ -63,7 +63,7 @@ class ParkingLot:
         return "Car with given registration number not found."
 
     def get_car_using_slot_id(self, slot_id):
-        slot = self.slots[slot_id].get_slot()
+        slot = self.slots[slot_id].get_vehicle()
         if slot is not None:
             return slot.get_registration_num()
         return "Car not found on given slot."
