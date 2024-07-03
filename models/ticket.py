@@ -17,7 +17,7 @@ class Ticket:
 
     def get_total_hrs(self):
         time = self.exit_time - self.entry_time
-        if time == 0:
+        if time <= 0:
             return 1
         return time
 
