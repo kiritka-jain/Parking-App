@@ -23,10 +23,12 @@ class ParkingLot:
 
     def park_car(self, car, entry_time):
         available_slot = self._get_free_slot()
+        reg_num = car.get_registration_num()
         if available_slot is None:
             return "Parking full. No slot available."
+        if self._get_slot_by_reg_number(reg_num):
+            return "Car with this registration number already parked ."
         self.slots[available_slot].set_vehicle(car)
-        reg_num = car.get_registration_num()
         ticket_id = str(available_slot) + "a"
         new_ticket = Ticket(ticket_id, reg_num, entry_time)
         self.tickets[reg_num] = new_ticket
@@ -58,9 +60,10 @@ class ParkingLot:
         print("Your parking charges are Rupees:", amount)
         self.empty += 1
         self.occupied -= 1
-        car_col = self._get_car_by_reg_num(car_reg_num)
+        car_col = self._get_car_col_by_reg_num(car_reg_num)
         self.same_color_cars_reg_num[car_col].remove(car_reg_num)
-        return slot.empty_slot()
+        slot.empty_slot()
+        return "Thanks for your Visit."
 
     def create_slots(self):
         for i in range(self.capacity):
@@ -125,7 +128,7 @@ class ParkingLot:
                 return self.slots[i]
         return None
 
-    def _get_car_by_reg_num(self, reg_num):
+    def _get_car_col_by_reg_num(self, reg_num):
         for i in range(self.capacity):
             vehicle = self.slots[i].get_vehicle()
             if vehicle is not None and vehicle.get_registration_num() == reg_num:

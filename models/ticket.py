@@ -14,16 +14,17 @@ class Ticket:
     def set_exit_time(self, exit_time):
         if exit_time < self.entry_time:
             raise InvalidExitTimeException
+        self.exit_time = exit_time
 
     def get_total_hrs(self):
         time = self.exit_time - self.entry_time
-        if time <= 0:
+        if time <= 1:
             return 1
         return time
 
     def get_amount_to_pay(self):
         total_time = self.get_total_hrs()
         if total_time <= 3:
-            return 50 * total_time
+            return 50
         else:
-            return 50 * 3 + (total_time - 3) * 50
+            return 50 + (total_time - 3) * 50
